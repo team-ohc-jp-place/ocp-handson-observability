@@ -134,10 +134,10 @@ image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheu
 +
 次に、OpenShiftが提供するモニタリング機能にアクセスしてみましょう。 +
  **[Administrator] > [Observe] > [Metrics]** を選択します。
-
++
 先程の `openshift-console` ProjectのCPU利用状況をグラフ表示してみましょう。 +
 +
-*画面中段のクエリボックスに、次のクエリを入力して、**Run queries** ボタンを押します。
+画面中段のクエリボックスに、次のクエリを入力して、**Run queries** ボタンを押します。
 +
 [source,role="copypaste"]
 ----
@@ -147,9 +147,9 @@ namespace:container_cpu_usage:sum{namespace='openshift-console'}
 すると、
 ``openshift-console``Project内のコンテナCPU利用量のグラフが描画されます。折れ線グラフにカーソルを合わせると詳細情報が表示されます。
 +
-image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-cpu-usage.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-obserb-cpu-usage.png[]
 +
-. Prometheusで任意のメトリクスを指定して描画してみます。
+. 任意のメトリクスを指定して描画してみます。
 +
 入力済のクエリを削除してブランクにしてから、次のように入力してみましょう。
 +
@@ -159,24 +159,22 @@ controller_runtime_
 ----
 +
 すると、自動補完機能が働いて、自動的に候補となるクエリがリストされます。クエリを完全に覚えていなくてもよいので、便利な機能です。 +
-それではこの中から、`controller_runtime_reconcile_total` を選択して、**Execute** ボタンを押します。
+それではこの中から、`controller_runtime_reconcile_total` を選択して、**Run queries** ボタンを押します。
 +
-image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-obserb-cpu-usage.png[]
+image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-observ-container_cpu-usage.png[]
 +
-以下図のように折れ線グラフが描画され、下部にはリクエストが一覧されています。カーソルをグラフなどに合わせて詳細情報を確認してみましょう。もしうまく描画されない場合は、検索クエリが正しく指定されているか(``controller_runtime_reconcile_total``)を確認してみましょう。
-+
-image::images/ocp4ws-ops/ocp4-console-project-openshift-console-status-prometheus-add-2.png[]
+上の図のように折れ線グラフが描画され、下部にはリクエストが一覧されています。カーソルをグラフなどに合わせて詳細情報を確認してみましょう。もしうまく描画されない場合は、検索クエリが正しく指定されているか(``controller_runtime_reconcile_total``)を確認してみましょう。
 +
 [TIPS]
 ====
 NOTE: OpenShiftでは、各Project(Namespace)に属するあらゆるリソースのメトリクスを初期状態で取得できるようになっています。PrometheusやGrafanaなどを使うことでモニタリングおよび描画を実現しています。
 ====
 +
-. "Grafana"というツールを使ってリソースを確認することも可能です。[Administrator] > [Observe] > [Dashboards]から確認してみましょう。
+. Dashboardsでリソースを確認することも可能です。Dashboardsは、"Grafana"を組み込んでいます。[Administrator] > [Observe] > [Dashboards]から確認してみましょう。
 +
-image::images/ocp4ws-ops/ocp4-console-observe-dashboard.png[]
+image::images/ocp4ws-ops/ocp4-console-observe-dashboard2.png[]
 +
-. 現在開いているタブ（Prometheus UI (あるいはGrafana)）は、**モニタリングやロギングなど短期間で更新される画面であるため、ブラウザに負荷がかかります。**このため、必ずクローズしておきましょう。
+
 
 ---
 
