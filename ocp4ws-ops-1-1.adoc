@@ -50,18 +50,28 @@ image::images/ocp4ws-ops/ocp4-Lab1-1-2-2_1webterminal.png[]
 image::images/ocp4ws-ops/ocp4-Lab1-1-2-2_2webterminal.png[]
 
 
-試しにログインしているユーザーの情報を表示する``oc whoami``コマンドを実行してみましょう。``userX``と表示されるはずです。
-
-[source,bash,role="execute"]
-----
-oc whoami
-----
-
-出力例)
+試しにログインしているユーザーの情報を表示する``oc whoami``コマンドを実行してみましょう。openShiftユーザが表示されます。
 
 ----
 $ oc whoami
-userX
+user1
+----
+
+=== 1-1-2-3. 環境変数の設定
+・今回のハンズオンで利用する環境変数を設定します。
+
+----
+$ export TUTORIAL_USERNAME=`oc whoami`
+$ export TUTORIAL_LAB_NAMESPACE=lab1-${TUTORIAL_USERNAME}
+----
+
+・設定内容を確認します。
+
+----
+$ echo ${TUTORIAL_USERNAME}
+user1
+$ echo ${TUTORIAL_LAB_NAMESPACE}
+lab1-user1
 ----
 
 
@@ -80,7 +90,7 @@ image::images/ocp4ws-ops/ocp4-console-create-project-1.png[]
 +
 image::images/ocp4ws-ops/ocp4-console-create-project-1-2.png[]
 +
-. **"Name"**にProject名として``userX-lab1``(他の名前でも構いません)を指定し、**Create** を選択します。
+. **"Name"**にProject名として``lab1-${TUTORIAL_USERNAME}`(他の名前でも構いません)を指定し、**Create** を選択します。
 +
 image::images/ocp4ws-ops/ocp4-console-create-project-2.png[]
 +
@@ -93,7 +103,7 @@ image::images/ocp4ws-ops/ocp4-console-create-project-3.png[]
 === 1-1-3-2. Projectのリソース利用状況の確認
 Projectのリソース利用状況を確認します。 +
 OpenShiftクラスターには複数のProjectが存在します。Projectの一覧は、Webコンソールで　**[Administrator] > [Home] > [Projects]** から確認することができます。 +
-Projectの詳細はこの一覧からProjectを選択することで確認できます。例えば、先程作成した``lab1-1``を選択すると、Project作成後に表示されたものと同じ画面が表示されます。 +
+Projectの詳細はこの一覧からProjectを選択することで確認できます。例えば、先程作成した``lab1-${TUTORIAL_USERNAME}``を選択すると、Project作成後に表示されたものと同じ画面が表示されます。 +
 
 image::images/ocp4ws-ops/ocp4-console-project.png[]
 image::images/ocp4ws-ops/ocp4-console-create-project-3.png[]
