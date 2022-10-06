@@ -37,7 +37,7 @@ OpenShift WebコンソールのRULは、etherpad OpenShift Webコンソールの
 (etherpadで予約したuser1,user2などのIDです)
 
 
-Webコンソールの基本操作やクラスター内コンポーネントの基本的な動作の確認を行いたい場合は、前のハンズオンlink:ocp4ws-ops-1-1[OpenShiftクラスターへのログインと動作確認(Lab1-1)]を実施してください。
+Webコンソールの基本操作やクラスター内コンポーネントの基本的な動作の確認を行いたい場合は、前のハンズオンlink:ocp4ws-ops-1-1.adoc[OpenShiftクラスターへのログインと動作確認(Lab1-1)]を実施してください。
 
 == 1-2-3. コンテナイメージのビルドとデプロイ
 
@@ -217,3 +217,4 @@ image::images/ocp4ws-ops/ocp4-lab1-3-create-route-confirm-result-pod.png[]
 '''
 
 以上で、コンテナイメージのビルドとデプロイ は完了です。
+次に link:ocp4ws-ops-1-3.adoc[Lab1-3: Prometheus JMX Exporterの展開] のハンズオンに進みます。
