@@ -1,3 +1,11 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 = Lab 1-3: Prometheus JMX Exporterの展開
 
 == 1-3-1. Labで扱うアプリケーション構成
@@ -32,7 +40,7 @@ Webコンソールの基本操作やクラスター内コンポーネントの�
 === Javaアプリケーションのビルド
 
 . 監視アプリケーション用の"userX-jmx-monitor"という名前のProjectを作ります。 +
-
++
 WARNING: 以降の作業は全て"userX-jmx-monitor"Projectで行います。 +
 
 [source,bash,role="execute"]
@@ -57,9 +65,10 @@ $ oc project
 Using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
 ----
 通常は``oc new-project``コマンドでProjectを作成すると、自動的に作成したProjectが指定されます。``oc project``コマンドで現在指定しているProjectが"userX-jmx-monitor"であることを確認して下さい。 +
++
 
 . アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。 +
-
++
 [source,bash,role="execute"]
 ----
 $ cd ~/
@@ -83,7 +92,7 @@ $ oc new-build .
     buildconfig.build.openshift.io "jboss-eap-prometheus" created
 --> Success
 ----
-
++
 . ビルドの状況をocコマンドで確認します。 +
 
 WARNING: 新しくイメージをPullするため、ビルドには少し時間がかかります。 +
