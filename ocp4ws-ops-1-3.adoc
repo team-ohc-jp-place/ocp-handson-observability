@@ -54,11 +54,11 @@ Now using project "user1-jmx-monitor" on server "https://api.cluster-3adc.3adc.s
 
 You can add applications to this project with the 'new-app' command. For example, try:
 
-    oc new-app ruby~https://github.com/sclorg/ruby-ex.git
+    oc new-app rails-postgresql-example
 
 to build a new example application in Ruby. Or use kubectl to deploy a simple Kubernetes application:
 
-    kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+    kubectl create deployment hello-node --image=k8s.gcr.io/e2e-test-images/agnhost:2.33 -- /agnhost serve-hostname
 
 $ oc project
 Using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
@@ -163,7 +163,15 @@ TIP: 必要に応じてJavaアプリケーションにAnnotationを付与する�
 [source,bash,role="execute"]
 ----
 $ oc annotate svc/jboss-eap-prometheus prometheus.io/scrape='true'
+
 $ oc annotate svc/jboss-eap-prometheus prometheus.io/port='9404'
+
+$ oc get svc jboss-eap-prometheus -o jsonpath='{.metadata.annotations}' |jq
+{
+  "openshift.io/generated-by": "OpenShiftNewApp",
+  "prometheus.io/port": "9404",
+  "prometheus.io/scrape": "true"
+}
 ----
 
 ==== 2. 展開したJavaアプリケーションの確認 +
