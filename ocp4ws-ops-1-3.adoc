@@ -1,35 +1,22 @@
 = Lab 1-3: Prometheus JMX Exporterの展開
 
-== 1-3-1. 諸注意
-
-=== Labで扱うアプリケーションの構成
+== 1-3-1. Labで扱うアプリケーション構成
 Lab 1-3 〜 1-5 では、オープンソースの監視ツールである"Prometheus"を扱います。 +
 このLab 1-3では、監視対象となるJBoss EAPのJavaアプリケーションをデプロイした後、PrometheusのJMX(Java Management Extensions) Exporterを使ってこのアプリケーションのメトリクスデータを公開します。 +
-後続するLab 1-4, 1-5で、Prometheus OperatorでPrometheusをデプロイし、JMXメトリクスデータを可視化します。
+後続するLab 1-4, 1-5で、Prometheus OperatorでPrometheusをデプロイし、JMXメトリクスデータを可視化します。 +
 
 image::images/ocp4ws-ops/prometheus-arch-jmx-exporter.jpg[]
 
-[TIP]
-test  
-
-
-[TIPS]
-====
-NOTE: JMX Exporterは2つの動作を提供します。
+=== JMX Exporterは2つの動作を提供します。
 
 - Java Agent +
 Java Agent 用 JAR ファイルからメトリクスを収集 +
 - HTTP server +
 リモートの JMX ターゲットからメトリクスを取得しHTTPで公開
 
-Java Agent 用 JAR ファイルを配置する方法は次の2通りがあります。
-
-- Docker Build Strategy: Dockerfile にビルド済み JAR ファイルを取得し配置 +
-- s2i: pom.xml に Dependency をセットし、s2i 実行時に Maven でビルド
-
 ====
 
-== 1-3-2. 監視対象となるアプリケーションのデプロイ
+== 1-3-2. 監視対象となるJavaアプリケーションのデプロイ
 
 === OpenShiftコンソールへのログイン
 
@@ -45,26 +32,21 @@ Webコンソールの基本操作やクラスター内コンポーネントの�
 
 ---
 
-=== 1-3-2-2. アプリケーションのビルド
+=== Javaアプリケーションのビルド
 
-. 監視対象アプリケーション用の"userX-jmx"という名前のProjectを作ります。 +
-**以降のLab1-3の作業は全て"userX-jmx"Projectで行います。**通常は``oc new-project``コマンドでProjectを作成すると、自動的に作成したProjectが指定されますが、念のため``oc project``コマンドで現在指定しているProjectが"userX-jmx"であることを確認して下さい。
+. 監視アプリケーション用の"userX-jmx-monitor"という名前のProjectを作ります。 +
+**以降の作業は全て"userX-jmx-monitor"Projectで行います。** +
+
 +
 [source,bash,role="execute"]
 ----
-oc new-project userX-jmx 
-----
-+
-[source,bash,role="execute"]
-----
-oc project
-----
-+
-実行例)
-+
-----
-$ oc new-project user1-jmx
-Now using project "user1-jmx" on server "https://api.cluster-3adc.3adc.sandbox691.opentlc.com:6443".
+## ご自身のユーザー名を入力ください。
+$ export TUTORIAL_USERNAME=userXX
+
+$ export TUTORIAL_MONITOR_NAMESPACE=${TUTORIAL_USERNAME}-jmx-monitor
+
+$ oc new-project ${TUTORIAL_MONITOR_NAMESPACE}
+Now using project "user1-jmx-monitor" on server "https://api.cluster-3adc.3adc.sandbox691.opentlc.com:6443".
 
 You can add applications to this project with the 'new-app' command. For example, try:
 
@@ -75,35 +57,23 @@ to build a new example application in Ruby. Or use kubectl to deploy a simple Ku
     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
 
 $ oc project
-Using project "user1-jmx" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
+Using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandbox135.opentlc.com:6443".
 ----
+通常は``oc new-project``コマンドでProjectを作成すると、自動的に作成したProjectが指定されます。``oc project``コマンドで現在指定しているProjectが"userX-jmx-monitor"であることを確認して下さい。 +
+
 +
 . アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。
 +
 [source,bash,role="execute"]
-----
-git clone https://github.com/openlab-red/jboss-eap-prometheus
-----
-+
-[source,bash,role="execute"]
-----
-cd ./jboss-eap-prometheus/
-----
-+
-[source,bash,role="execute"]
-----
-oc new-build .
-----
-+
-実行例)
-+
 ----
 $ git clone https://github.com/openlab-red/jboss-eap-prometheus
 Cloning into 'jboss-eap-prometheus'...
 remote: Enumerating objects: 43, done.
 remote: Total 43 (delta 0), reused 0 (delta 0), pack-reused 43
 Unpacking objects: 100% (43/43), done.
+
 $ cd ./jboss-eap-prometheus/
+
 $ oc new-build .
 --> Found container image b72b49b (3 years old) from registry.access.redhat.com for "registry.access.redhat.com/jboss-eap-7/eap70-openshift:latest"
 
@@ -116,25 +86,9 @@ $ oc new-build .
 --> Success
 ----
 
-. ビルドの状況をocコマンドと、OpenShiftコンソールからも確認します。
+. ビルドには少し時間がかかります。ビルドの状況をocコマンド、およびOpenShiftコンソールからも確認しましょう。
 +
 [source,bash,role="execute"]
-----
-oc logs -f bc/jboss-eap-prometheus
-----
-+
-[source,bash,role="execute"]
-----
-oc get build
-----
-+
-[source,bash,role="execute"]
-----
-oc get imagestream
-----
-+
-実行例)
-+
 ----
 $ oc logs -f bc/jboss-eap-prometheus
 Cloning "https://github.com/openlab-red/jboss-eap-prometheus" ...
@@ -144,8 +98,8 @@ Cloning "https://github.com/openlab-red/jboss-eap-prometheus" ...
 Writing manifest to image destination
 Storing signatures
 Push successful
- ※イメージがPushされると自動的にログから開放されるので待つ。
- (もし「Errorとなってしまった場合は」、[Ctl] + [C]で出て再度やり直す)
+ ## イメージがPushされると自動的にログから開放されます。ログの完了を待ってください。
+ ## もし「Errorとなってしまった場合は」、[Ctl] + [C]で出て再度やり直す
 
 $ oc get build
 NAME                     TYPE     FROM          STATUS     STARTED              DURATION
@@ -160,38 +114,28 @@ jboss-eap-prometheus   image-registry.openshift-image-registry.svc:5000/userX-jm
   56 seconds ago
 ----
 +
-OpenShiftコンソールにて、[Administrator]>[Builds]>[Image Streams]から、ビルドしたイメージがImageStreamに登録されていることも確認しましょう。Projectは `userX-jmx` を選択します。
+OpenShiftコンソールでは、ポータルの[Administrator]パースペクティブから[Builds]>[Image Streams]に遷移し、ビルドしたイメージがImageStreamに登録されていることを確認します。 +
+Projectは `userX-jmx-monitori` を選択することを忘れないようにしておきましょう。 +
 +
 image::images/ocp4ws-ops/ocp4-i-lab1-1-imagestream-jboss.png[]
 
 ---
 
-=== 1-3-2-3. アプリケーションのデプロイ
+=== Javaアプリケーションのデプロイ
 
-. アプリケーションの展開
+. Javaアプリケーションの展開
 +
-ここでは、登録した「jboss-eap-prometheus」を利用して、アプリケーションを展開します。 +
- 展開の際には、Java Agent用JARファイルやJMX Exporter設定ファイルのパスを環境変数(jmx-prometheus.jar=9404)で指定しておきましょう。
-+
-[source,bash,role="execute"]
-----
-export JBOSS_HOME=/opt/eap
-----
+ここでは、先程ビルドしたした「jboss-eap-prometheus」を利用して、アプリケーションを展開します。 +
+ デプロイでは、Java Agent用JARファイルやJMX Exporter設定ファイルのパスを環境変数(jmx-prometheus.jar=9404)で指定します。 +
 +
 [source,bash,role="execute"]
-----
-oc new-app -i jboss-eap-prometheus:latest \
-  --name=jboss-eap-prometheus \
-  -e PREPEND_JAVA_OPTS="-javaagent:${JBOSS_HOME}/prometheus/jmx-prometheus.jar=9404:${JBOSS_HOME}/prometheus/config.yaml"
-----
-+
-実行例)
-+
 ----
 $ export JBOSS_HOME=/opt/eap
+
 $ oc new-app -i jboss-eap-prometheus:latest \
   --name=jboss-eap-prometheus \
   -e PREPEND_JAVA_OPTS="-javaagent:${JBOSS_HOME}/prometheus/jmx-prometheus.jar=9404:${JBOSS_HOME}/prometheus/config.yaml"
+
 --> Found image add9eb8 (14 minutes old) in image stream "jmx/jboss-eap-prometheus" under tag "latest" for "jboss-eap-prometheus:latest"
 
 ...(中略)
@@ -201,29 +145,21 @@ $ oc new-app -i jboss-eap-prometheus:latest \
      'oc expose svc/jboss-eap-prometheus'
     Run 'oc status' to view your app.
 ----
++
+必要に応じてJavaアプリケーションにAnnotationを付与することも可能です。 +
++
+[source,bash,role="execute"]
+----
+$ oc annotate svc/jboss-eap-prometheus prometheus.io/scrape='true'
+$ oc annotate svc/jboss-eap-prometheus prometheus.io/port='9404'
+----
 
-. 展開したアプリケーションの確認
+. 展開したJavaアプリケーションの確認
 +
 この時点で「jboss-eap-prometheus-1」がRunning状態になれば、デプロイ成功です。 +
-JMX Exporter はデフォルトで9404ポートを公開します。
+JMX Exporter はデフォルトで9404ポートを公開しています。
 +
 [source,bash,role="execute"]
-----
-oc get svc jboss-eap-prometheus
-----
-+
-[source,bash,role="execute"]
-----
-oc get deploy jboss-eap-prometheus
-----
-+
-[source,bash,role="execute"]
-----
-oc get pod
-----
-+
-実行例)
-+
 ----
 $ oc get svc jboss-eap-prometheus
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                               AGE
@@ -239,71 +175,53 @@ jboss-eap-prometheus-1-build           0/1     Completed   0          111s
 jboss-eap-prometheus-b8fccc765-jplx2   1/1     Running     0          57s
 ----
 +
-「jboss-eap-prometheus-b8fccc765-jplx2」(b8fccc765-jplx2はデプロイしたときにランダムに生成される)がRunning状態になるまで待ちましょう。
+「jboss-eap-prometheus-b8fccc765-jplx2」(b8fccc765-jplx2はランダムに生成)がRunning状態になるまで待ちましょう。 +
 
 ---
 
-=== 1-3-2-4. アプリケーションのRoute設定
+=== JavaアプリケーションのRoute設定
 
-「jboss-eap-prometheus」のアプリケーション(tcp-8080)ポートを、Routerに接続します。
-
+次に「jboss-eap-prometheus」のアプリケーション(tcp-8080)ポートを、Routerに接続します。 +
++
 [source,bash,role="execute"]
 ----
-oc expose svc/jboss-eap-prometheus --name=userX-tcp-8080 --port=8080
-----
-[source,bash,role="execute"]
-----
-oc get route userX-tcp-8080
-----
+$ oc expose svc/jboss-eap-prometheus --name=tcp-8080 --port=8080
+route.route.openshift.io/tcp-8080 exposed
 
-実行例)
-
-----
-$ oc expose svc/jboss-eap-prometheus --name=user2-tcp-8080 --port=8080
-route.route.openshift.io/user1-tcp-8080 exposed
-
-$ oc get route user1-tcp-8080
+$ oc get route tcp-8080
 NAME       HOST/PORT                                                    PATH   SERVICES               PORT   TERMINATION   WILDCARD
-user1-tcp-8080   user1-tcp-8080-user1-jmx.apps.cluster-3adc.3adc.sandbox691.opentlc.com          jboss-eap-prometheus   8080                 None
+tcp-8080   tcp-8080-user1-jmx-monitor.apps.cluster-3adc.3adc.sandbox691.opentlc.com          jboss-eap-prometheus   8080                 None
 ----
++
 ``oc get route``コマンドの出力の、``HOST/PORT``のカラムに表示されるURLにブラウザからアクセスすると、アプリケーションコンテンツが確認できます。 +
-次のコマンドの出力で表示されるURLにブラウザでアクセスしてみましょう。JBoss EAPの画面が表示されるはずです。
+次のコマンドの出力で表示されるURLにブラウザでアクセスしてみましょう。JBoss EAPのインフォーメーション画面が表示されれば成功です。 +
++
 [source,bash,role="execute"]
 ----
-echo http://$(oc get route userX-tcp-8080 -ojsonpath='{.spec.host}')
+echo http://$(oc get route tcp-8080 -ojsonpath='{.spec.host}')
 ----
 
 image::images/ocp4ws-ops/jboss-eap-prometheus-8080.jpg[Jboss Application]
-
-
-次に先と同様に「jboss-eap-prometheus」のPromtheus Exporter(tcp-9404)ポートを、Routerに接続します。
-
-[source,bash,role="execute"]
++
+次に先と同様に「jboss-eap-prometheus」のPromtheus Exporter(tcp-9404)ポートを、Routerに接続します。 +
++
 ----
-oc expose svc/jboss-eap-prometheus --name=userX-tcp-9404 --port=9404
-----
-[source,bash,role="execute"]
-----
-oc get route userX-tcp-9404
-----
+$ oc expose svc/jboss-eap-prometheus --name=tcp-9404 --port=9404
+route.route.openshift.io/tcp-9404 exposed
 
-実行例)
-
-----
-$ oc expose svc/jboss-eap-prometheus --name=user1-tcp-9404 --port=9404
-route.route.openshift.io/user1-tcp-9404 exposed
-
-$ oc get route user1-tcp-9404
+$ oc get route tcp-9404
 NAME       HOST/PORT                                                    PATH   SERVICES               PORT   TERMINATION   WILDCARD
-user3-tcp-9404   user3-tcp-9404-user3-jmx.apps.cluster-3adc.3adc.sandbox691.opentlc.com          jboss-eap-prometheus   9404                 None
+tcp-9404   tcp-9404-user3-jmx.apps.cluster-3adc.3adc.sandbox691.opentlc.com          jboss-eap-prometheus   9404                 None
 ----
 
-先と同様に``HOST/PORT``のカラムに表示されるURLにブラウザからアクセスしてみましょう。JMX Exporterから取得したPromSQLのクエリが確認できます。
+先と同様に``HOST/PORT``のカラムに表示されるURLにブラウザからアクセスしてみましょう。
 [source,bash,role="execute"]
 ----
-echo http://$(oc get route userX-tcp-9404 -ojsonpath='{.spec.host}')
+echo http://$(oc get route tcp-9404 -ojsonpath='{.spec.host}')
 ----
-
++
+JMX Exporterから取得したPromSQLのクエリが確認できれば成功です。ExporterがJVMから情報を集めるため少し時間がかかります。
++
 image::images/ocp4ws-ops/jboss-eap-prometheus-9404.jpg[Jboss Application]
 
-これで、JMX Exporterの設定は完了です。次にlink:ocp4ws-ops-1-4[Prometheus Operator]の作業に進みます。
+これで、JMX Exporterの設定は完了です。次にlink:ocp4ws-ops-1-4.adoc[Prometheus Operator]の設定作業に進みます。
