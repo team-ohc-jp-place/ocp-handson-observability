@@ -43,11 +43,12 @@ OpenShift Webコンソールにログインし、[Administrator]パースペク�
 
 image::images/ocp4ws-ops/operator-hub.png[OperatorHub]
 
+==== 2. Operatorの設定
 OperatorHubの中から、Prometheus Operator(Community)を選択して、[Install]を行います。 +
 
 image::images/ocp4ws-ops/prometheus-operator.png[Prometheus Operator]
 
-Note: コミュニティ版を利用すると、警告が表示されますが、一旦[Continue]で続けます。 +
+NOTE: コミュニティ版を利用すると、警告が表示されますが、一旦[Continue]で続けます。 +
 
 image::images/ocp4ws-ops/prometheus-operator-subscription.png[]
 
@@ -83,19 +84,21 @@ image::images/ocp4ws-ops/prometheus-operator-overview.png[]
 これで、Prometheus Operatorがインストールされました。 +
 なおこの時点では、Custom Resource Definition(CRD)の登録やPrometheus Operatorの配置が行われるだけで、Prometheusのプロセス自体はまだ構築されません。 +
 
-TIP: Operatorの一覧を``oc``コマンドで確認する
+==== 3. Operator Managerによる管理
+Operatorの一覧を``oc``コマンドで確認する +
 ``oc describe``を使うことでWebコンソールのOperatorHubでは表示されないような、各Operatorの詳細な情報を得ることができます。 +
 [source,bash,role="execute"]
 ----
 $ oc describe packagemanifest prometheus -n openshift-marketplace
 ----
 
-例えば、Installation Modeに注目してみると、Webコンソールでは、
+例えば、Installation Modeに注目してみると、Webコンソールでは、 +
 
 * All namespaces on the cluster 
 * A specific namespace on the cluster
 
-の2つが表示されていました。一方、`oc describe` の出力では、次のような表示を見つけることができます。
+の2つが表示されていました。一方、`oc describe` の出力では、次のような表示を見つけることができます。 +
+
 ----
       Install Modes:
         Supported:  true
@@ -107,7 +110,9 @@ $ oc describe packagemanifest prometheus -n openshift-marketplace
         Supported:  false
         Type:       AllNamespaces
 ----
-これらのInstall Modeは下表のような特徴があります。Operator Managerによって内部的にはOperatorが監視するNamespacesの範囲を制御していることがわかります。
+
+これらのInstall Modeは下表のような特徴があります。Operator Managerによって内部的にはOperatorが監視するNamespacesの範囲を制御していることがわかります。 +
+
 |===
 | InstallMode | Action
 
@@ -147,7 +152,8 @@ thanosrulers.monitoring.coreos.com          2022-03-17T03:17:33Z   operators.cor
 ----
 ====
 
-また、Operator自身もアプリケーションに他なりません。そのため、インストールされるPodとして稼働します。 +
+==== 4. Operator Installの確認
+Operator自身もアプリケーションに他なりません。そのため、インストールされるPodとして稼働します。 +
 ``oc get pod``によって、Prometheus OperatorのPodがOLM(Operator Lifecycle Manager)によって配置されていることが確認できます。 +
 [source,bash,role="execute"]
 ----
