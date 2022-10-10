@@ -128,7 +128,6 @@ $ oc describe packagemanifest prometheus -n openshift-marketplace
 | AllNamespaces
 | Operatorはすべての namespace を選択するOperatorGroupのメンバーできます (ターゲット namespace 設定は空の文字列 "" です)。
 |===
-====
 
 ==== 4. CRDの確認
 Prometheus Operatorをインストールすると、CRD(Custom Resource Definition)が作成されます。 +
@@ -151,7 +150,6 @@ prometheusrules.monitoring.coreos.com       2022-03-17T03:17:28Z   operators.cor
 servicemonitors.monitoring.coreos.com       2022-03-17T03:17:30Z   operators.coreos.com/prometheus.jmx-monitor=
 thanosrulers.monitoring.coreos.com          2022-03-17T03:17:33Z   operators.coreos.com/prometheus.jmx-monitor=
 ----
-====
 
 ==== 5. Operator Installの確認
 Operator自身もアプリケーションに他なりません。そのため、インストールされるPodとして稼働します。 +
