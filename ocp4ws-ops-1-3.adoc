@@ -2,12 +2,16 @@
 
 == 1-3-1. 諸注意
 
-=== 1-3-1-1. Labで扱うアプリケーションの構成
+=== Labで扱うアプリケーションの構成
 Lab 1-3 〜 1-5 では、オープンソースの監視ツールである"Prometheus"を扱います。 +
 このLab 1-3では、監視対象となるJBoss EAPのJavaアプリケーションをデプロイした後、PrometheusのJMX(Java Management Extensions) Exporterを使ってこのアプリケーションのメトリクスデータを公開します。 +
 後続するLab 1-4, 1-5で、Prometheus OperatorでPrometheusをデプロイし、JMXメトリクスデータを可視化します。
 
 image::images/ocp4ws-ops/prometheus-arch-jmx-exporter.jpg[]
+
+[TIP]
+test  
+
 
 [TIPS]
 ====
@@ -25,13 +29,9 @@ Java Agent 用 JAR ファイルを配置する方法は次の2通りがありま
 
 ====
 
-=== 1-3-1-2. 事前準備
-
-* OpenShiftクラスターへのアクセス情報
-
 == 1-3-2. 監視対象となるアプリケーションのデプロイ
 
-=== 1-3-2-1. OpenShiftコンソールへのログイン
+=== OpenShiftコンソールへのログイン
 
 ブラウザ(Chrome or Firefox)でOpenShift Webコンソールにログインします。
 
