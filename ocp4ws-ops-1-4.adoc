@@ -85,7 +85,7 @@ image::images/ocp4ws-ops/prometheus-operator-overview.png[]
 なおこの時点では、Custom Resource Definition(CRD)の登録やPrometheus Operatorの配置が行われるだけで、Prometheusのプロセス自体はまだ構築されません。 +
 
 ==== 3. Operator Managerによる管理
-Operatorの一覧を``oc``コマンドで確認する +
+Operatorの管理に関して``oc``コマンドで確認します。 +
 ``oc describe``を使うことでWebコンソールのOperatorHubでは表示されないような、各Operatorの詳細な情報を得ることができます。 +
 [source,bash,role="execute"]
 ----
@@ -130,6 +130,7 @@ $ oc describe packagemanifest prometheus -n openshift-marketplace
 |===
 ====
 
+==== 4. CRDの確認
 Prometheus Operatorをインストールすると、CRD(Custom Resource Definition)が作成されます。 +
 Webコンソールでは [Operators]>[Installed Operators]>[Prometheus Operator] から、デプロイされたPromethus OperatorのCRDが確認できます。 +
 
@@ -152,16 +153,16 @@ thanosrulers.monitoring.coreos.com          2022-03-17T03:17:33Z   operators.cor
 ----
 ====
 
-==== 4. Operator Installの確認
+==== 5. Operator Installの確認
 Operator自身もアプリケーションに他なりません。そのため、インストールされるPodとして稼働します。 +
 ``oc get pod``によって、Prometheus OperatorのPodがOLM(Operator Lifecycle Manager)によって配置されていることが確認できます。 +
 [source,bash,role="execute"]
 ----
-$ oc get pod
+$ oc get pod -l k8s-app=prometheus-operator
 NAME                                  READY   STATUS    RESTARTS   AGE
 prometheus-operator-bd98985fd-vcnw6   1/1     Running   0          5m52s
 ----
 
 '''
 
-以上で、Promethus Operatorの準備が整いました。次のlink:ocp4ws-ops-1-5[CustomResourceの設定]作業に進みます。
+以上で、Promethus Operatorの準備が整いました。次のlink:ocp4ws-ops-1-5.adoc[CustomResourceの設定]作業に進みます。
