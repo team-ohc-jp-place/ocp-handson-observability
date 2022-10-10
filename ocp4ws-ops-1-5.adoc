@@ -19,7 +19,7 @@ Serviceの可視化設定をするときは、以下の手順で設定を行い�
 . Project間通信を許可する
 . **Custome Resource(CR)**の"Service Monitor"を設定する
 
-INFO: Prometheus OpearatorのCRDはAPIドキュメントを参考にしましょう。 +
+NOTE: Prometheus OpearatorのCRDはAPIドキュメントを参考にしましょう。 +
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
 
 === 事前準備
@@ -34,7 +34,7 @@ image:images/ocp4ws-ops/service_tag.png[JMX Prometheus ExporterのServiceタグ]
 
 === "Prometheus" CRを作成
 
-作成したPrometheus Operatorを利用して、"Prometheus" CRを作成します。 +
+==== 1. Prometheus CRの設定確認
 "Prometheus" CRの作成には、以下のような項目を設定します。
 
 |===
@@ -103,6 +103,8 @@ image:images/ocp4ws-ops/service_tag.png[JMX Prometheus ExporterのServiceタグ]
 
 '''
 
+==== 2. Prometheus CRの作成
+作成したPrometheus Operatorを利用して、"Prometheus" CRを作成します。 +
 Webコンソールで"userX-jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Prometheus]タブの[Create Prometheus]をクリックします。 +
 
 image::images/ocp4ws-ops/create-prometheus.png[Create Prometheus]
@@ -140,6 +142,7 @@ spec:
 Webコンソールのエディターでは次のようになっていることを確認します。ここでも"userX-jmx-monitor"Projectが指定されているか注意して下さい。 +
 確認ができたら、[Create]をクリックします。 +
 
+==== 3. Prometheus Podの確認
 "Prometheus" CRを作成すると、Prometheus Operatorが``replicas: 2``の数だけ、PrometheusのPodを起動します。  +
 起動したPromethues Podを確認しておきましょう。
 
@@ -152,8 +155,10 @@ prometheus-monitoring-1               2/2     Running   1          51s
 prometheus-operator-bd98985fd-vcnw6   1/1     Running   0          17m
 ----
 
-=== PrometheusのGUIを確認
-PrometheusのGUIを表示しましょう。Lab1-3.で行ったように、PrometheusのServiceに対してRouterを接続し、Routeを作成します。
+=== PrometheusのDashboardを確認
+
+==== 1. PrometheusのRouter接続
+PrometheusのDashboardを表示しましょう。Lab1-3.で行ったように、PrometheusのServiceに対してRouterを接続し、Routeを作成します。
 
 [source,bash,role="execute"]
 ----
@@ -169,6 +174,7 @@ NAME                  HOST/PORT                                                 
 prometheus-operated   prometheus-operated-user1-jmx-monitor.apps.cluster-cc8c.cc8c.example.opentlc.com          prometheus-operated   web                  None
 ----
 
+==== 2. Prometheus Dashboard確認
 Routeが確認できたら、``HOST/PORT``のカラムに表示されるURLにアクセスしてみましょう。 +
 URLをブラウザにコピー&ペーストしてもよいですし、Webコンソールで[Administrator]パースペクティブにある[Networking]>[Route]から、作成されたRouteの"Location"に表示されているURLをクリックしても構いません。 +
 Prometheusのdashboardが表示されると成功です。 +
@@ -181,7 +187,7 @@ image::images/ocp4ws-ops/non-target-prometheus.jpg[NoTargets]
 
 === "Service Monitor" CRを作成
 
-最後に"Service Monitor" CRを作成して、JMXの値をPrometheusから取得して可視化します。  +
+==== 1. Service Monitor CRの設定確認
 "Service Monitor" CRの作成では以下のような項目を設定し、監視対象を特定します。 +
 
 |===
@@ -223,7 +229,9 @@ image::images/ocp4ws-ops/non-target-prometheus.jpg[NoTargets]
 | false
 |===
 
-Webコンソールで"userX-jmx-monitor"Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Service Monitor]タブの[Create Service Monitor]をクリックします。 +
+==== 2. Service Motnitor CRの作成
+最後に"Service Monitor" CRを作成して、JMXの値をPrometheusから取得して可視化します。  +
+Webコンソールで"userX-jmx-monitor" Projectを選択した状態で、[Operators]>[Intalled Operators]>[Prometheus Operator]を選択し、[Service Monitor]タブの[Create Service Monitor]をクリックします。 +
 この際、Projectが**"userX-jmx-monitor"**であることを確認します。 +
 
 image::images/ocp4ws-ops/create-servicemonitor.png[Create ServiceMonitor]
@@ -253,7 +261,8 @@ spec:
 この"Service Monitor" CRは``k8s-app: prometheus``のlabelを持つため、先程作成した"Prometheus" CRの監視対象となります。 +
 また、"jmx"Projectの``app: jboss-eap-prometheus``のlabelを持つアプリケーションをモニターするように設定しています。エンドポイントとして、Lab1-3.で設定したJMX Exporterのポート番号(TCP9404番)が指定されていることも確認してください。 +
 
-改めてPrometheusのGUIに戻り、[Status]>[Targets]から、対象が表示されることを確認してみましょう。 +
+==== 3. Prometheus監視項目確認
+改めてPrometheusのDashboardに戻り、[Status]>[Targets]から、対象が表示されることを確認してみましょう。 +
 Prometheusの設定が読み込まれ、出力表示が切り替わるまでに数分がかかりますので、何度か画面をリロードしてみて下さい。
 
 image::images/ocp4ws-ops/target-prometheus.png[Prometheus Target]
@@ -263,6 +272,7 @@ Targetが正しく表示でき、StateがUP状態であれば、JMXの値も確�
 
 image::images/ocp4ws-ops/jvm-memory-bytes-used.jpg[JVM Memory Bytes Used]
 
+---
 以上でPrometheus Operatorの基本利用は完了です。   +
 
 NOTE: 同じ要領で、AlertManagerも設定してみましょう。   +
