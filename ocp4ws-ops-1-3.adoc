@@ -36,11 +36,9 @@ OpenShift WebコンソールのRULは、etherpad OpenShift Webコンソールの
 
 Webコンソールの基本操作やクラスター内コンポーネントの基本的な動作の確認を行いたい場合は、前のハンズオンlink:ocp4ws-ops-1-1.adoc[OpenShiftクラスターへのログインと動作確認(Lab1-1)]を実施してください。
 
----
 === Javaアプリケーションのビルド
 
-1. 監視アプリケーション用の"userX-jmx-monitor"という名前のProjectを作ります。 +
-
+==== 1. 監視アプリケーション用の"userX-jmx-monitor"という名前のProjectを作ります。 +
 
 [source,bash,role="execute"]
 ----
@@ -67,7 +65,7 @@ Using project "user1-jmx-monitor" on server "https://api.cluster-8a39.8a39.sandb
 NOTE: 以降の作業は全て"userX-jmx-monitor"Projectで行います。 +
 通常は``oc new-project``コマンドでProjectを作成すると、自動的に作成したProjectが指定されます。``oc project``コマンドで現在指定しているProjectが"userX-jmx-monitor"であることを確認して下さい。 +
 
-2. アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。 +
+==== 2. アプリケーションをリポジトリからCloneして、「jboss-eap-prometheus」イメージをビルドします。 +
 
 [source,bash,role="execute"]
 ----
