@@ -1,3 +1,11 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
 = Lab1-4: Prometheus Operatorの展開
 
 == 1-4-1. Labで扱うOperator
@@ -43,9 +51,26 @@ image::images/ocp4ws-ops/prometheus-operator.png[Prometheus Operator]
 image::images/ocp4ws-ops/prometheus-operator-subscription.png[]
 
 "Install Operator"の画面では、以下の設定を指定して**Install**をクリックします。 +
++
+[cols="2", options="header"]
+|===
+|Objects
+|Selection
 
-* Update Channel +
-**beta**
+|Update Channel
+|beta
+
+|Installation Mode
+|A specific namespace on the cluster
+
+|Installed Namespace
+|userX-jmx-monitor
+
+|Approval Strategy
+|Automatic
+|===
+
+* Update Channel: beta +
 * Installation Mode +
 **A specific namespace on the cluster**
 * Installed Namespace +
@@ -66,7 +91,6 @@ image::images/ocp4ws-ops/prometheus-operator-overview.png[]
 これで、Prometheus Operatorがインストールされました。 +
 なおこの時点では、Custom Resource Definition(CRD)の登録やPrometheus Operatorの配置が行われるだけで、Prometheusのプロセス自体はまだ構築されません。 +
 
-====
 TIP: Operatorの一覧を``oc``コマンドで確認する
 ``oc describe``を使うことでWebコンソールのOperatorHubでは表示されないような、各Operatorの詳細な情報を得ることができます。 +
 
@@ -109,9 +133,6 @@ $ oc describe packagemanifest prometheus -n openshift-marketplace
 | Operatorはすべての namespace を選択するOperatorGroupのメンバーできます (ターゲット namespace 設定は空の文字列 "" です)。
 |===
 ====
-
-
-== 1-4-3. Custom Resource Definition(CRD)とOperatorの確認
 
 Prometheus Operatorをインストールすると、CRD(Custom Resource Definition)が作成されます。Promethus Operatorは、標準で8つのCRDを保持しています。 +
 Webコンソールでは [Operators]>[Installed Operators]>[Prometheus Operator] から、デプロイされたPromethus OperatorのCRDが確認できます。
@@ -158,12 +179,6 @@ thanosrulers.monitoring.coreos.com          2022-03-17T03:17:33Z   operators.cor
 また、Operator自身もアプリケーションに他なりません。そのため、インストールされるPodとして稼働します。 +
 ``oc get pod``によって、Prometheus OperatorのPodがOLM(Operator Lifecycle Manager)によって配置されていることが確認できます。
 [source,bash,role="execute"]
-----
-oc get pod
-----
-
-実行例)
-
 ----
 $ oc get pod
 NAME                                  READY   STATUS    RESTARTS   AGE
