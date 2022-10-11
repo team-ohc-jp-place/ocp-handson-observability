@@ -129,7 +129,7 @@ NOTE: 新しくイメージをPullするため、ビルドには少し時間が�
 
 イメージビルドの状況をOpenShiftポータルから確認します。 +
 OpenShiftコンソールでは、ポータルの[Administrator]パースペクティブから[Builds]>[Image Streams]に遷移し、ビルドしたイメージがImageStreamに登録されていることを確認します。 +
-Projectは `userX-jmx-monitori` を選択することを忘れないようにしておきましょう。 +
+Projectは `userX-jmx-monitor` を選択することを忘れないようにしておきましょう。 +
 
 image::images/ocp4ws-ops/ocp4-i-lab1-1-imagestream-jboss.png[]
 
@@ -185,7 +185,7 @@ $ oc get svc jboss-eap-prometheus
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                               AGE
 jboss-eap-prometheus   ClusterIP   172.30.187.179   <none>        8080/TCP,8443/TCP,8778/TCP,9404/TCP   46s
 
-$ oc get deploy jboss-eap-prometheus
+$ oc get dc jboss-eap-prometheus
 NAME                   READY   UP-TO-DATE   AVAILABLE   AGE
 jboss-eap-prometheus   1/1     1            1           52s
 

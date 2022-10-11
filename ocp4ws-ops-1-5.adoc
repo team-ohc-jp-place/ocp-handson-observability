@@ -15,9 +15,9 @@ endif::[]
 Serviceの可視化設定をするときは、以下の手順で設定を行います。
 
 . **Custome Resource(CR)**の"Prometheus"を設定する
-. PrometheusのGUIを確認する
-. Project間通信を許可する
+. PrometheusのDashboardを確認する
 . **Custome Resource(CR)**の"Service Monitor"を設定する
+. PrometheusのJVM監視を確認する
 
 NOTE: Prometheus OpearatorのCRDはAPIドキュメントを参考にしましょう。 +
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md
@@ -134,7 +134,7 @@ spec:
     timeout: 300s
   alerting:
     alertmanagers:
-      - namespace: user2-jmx-monitor
+      - namespace: userX-jmx-monitor
         name: alertmanager-main
         port: web
 ----
@@ -148,11 +148,10 @@ Webコンソールのエディターでは次のようになっていること�
 
 [source,bash,role="execute"]
 ----
-$ oc get pod
-NAME                                  READY   STATUS    RESTARTS   AGE
-prometheus-monitoring-0               2/2     Running   1          51s
-prometheus-monitoring-1               2/2     Running   1          51s
-prometheus-operator-bd98985fd-vcnw6   1/1     Running   0          17m
+$ oc get pod -l prometheus=monitoring
+NAME                      READY   STATUS    RESTARTS   AGE
+prometheus-monitoring-0   2/2     Running   0          89s
+prometheus-monitoring-1   2/2     Running   0          89s
 ----
 
 === PrometheusのDashboardを確認
@@ -163,13 +162,14 @@ PrometheusのDashboardを表示しましょう。Lab1-3.で行ったように、
 [source,bash,role="execute"]
 ----
 $ oc get svc
-NAME                  TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
-prometheus-operated   ClusterIP   None         <none>        9090/TCP   5m39s
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                             
+jboss-eap-prometheus   ClusterIP   172.30.227.60   <none>        8080/TCP,8443/TCP,8778/TCP,9404/TCP
+prometheus-operated    ClusterIP   None            <none>        9090/TCP 
 
 $ oc expose service prometheus-operated --name=prometheus-operated
-route.openshift.io/prometheus-operated exposed
+route.route.openshift.io/prometheus-operated exposed
 
-$ oc get route
+$ oc get route prometheus-operated
 NAME                  HOST/PORT                                                                           PATH   SERVICES              PORT   TERMINATION   WILDCARD
 prometheus-operated   prometheus-operated-user1-jmx-monitor.apps.cluster-cc8c.cc8c.example.opentlc.com          prometheus-operated   web                  None
 ----
@@ -181,7 +181,7 @@ Prometheusのdashboardが表示されると成功です。 +
 
 image::images/ocp4ws-ops/prometheus-route.png[]
 
-なお、この時点では何も監視登録が設定されていないため、PrometheusのGUIに接続できますが、[Status]>[Targets]には何も監視対象が表示されません。
+なお、この時点では何も監視登録が設定されていないため、PrometheusのDashboardに接続できますが、[Status]>[Targets]には何も監視対象が表示されません。
 
 image::images/ocp4ws-ops/non-target-prometheus.jpg[NoTargets]
 
