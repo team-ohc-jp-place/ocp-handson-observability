@@ -212,7 +212,7 @@ image::images/ocp4ws-ops/ocp4-lab1-3-create-route-confirm-result-pod.png[]
 * Project名(NameSpace): `trial-userX` (例: `trial-userX`)
 * BaseImage(BuilderImage): `Python 3.9-ubi8`
 * Git Repository: `+https://github.com/sclorg/django-ex+`
-* Routes名: `trial-userX`
+* Routes名: `trial`
 
 '''
 
