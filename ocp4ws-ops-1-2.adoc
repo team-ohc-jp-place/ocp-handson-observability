@@ -109,8 +109,8 @@ NOTE: Developer CatalogからPythonアプリケーションを作成すること
 
  ** Builder Image Version: `3.9-ubi8`
  ** Git Repo URL: `+https://github.com/openshift-katacoda/blog-django-py+`
- ** Applicaiton Name:``任意の名前(例: blog-userX)``
- ** Name:``任意の名前(例: blog-userX)``
+ ** Applicaiton Name:``任意の名前(例: blog)``
+ ** Name:``任意の名前(例: blog)``
  ** Create route: `チェックを外す`
 +
 image::images/ocp4ws-ops/ocp4-lab1-3-from-catalog-python-create-detail.png[]
@@ -155,8 +155,8 @@ image::images/ocp4ws-ops/ocp4-lab1-3-topology-pod-terminal.png[]
 image::images/ocp4ws-ops/ocp4-lab1-3-create-route.png[]
 
 . *Name*、対象アプリ用の**Service**、*Port* を指定します。
- ** Name: `任意の名前 (例: blog-userX)`
- ** Service: `指定済のアプリ名 (例: blog-userX)`
+ ** Name: `任意の名前 (例: blog)`
+ ** Service: `指定済のアプリ名 (例: blog)`
  ** Target Port: `8080 → 8080(TCP)`
 
 +
