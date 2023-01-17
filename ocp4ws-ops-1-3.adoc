@@ -185,7 +185,7 @@ $ oc get svc jboss-eap-prometheus
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                               AGE
 jboss-eap-prometheus   ClusterIP   172.30.187.179   <none>        8080/TCP,8443/TCP,8778/TCP,9404/TCP   46s
 
-$ oc get dc jboss-eap-prometheus
+$ oc get deployment jboss-eap-prometheus
 NAME                   READY   UP-TO-DATE   AVAILABLE   AGE
 jboss-eap-prometheus   1/1     1            1           52s
 
