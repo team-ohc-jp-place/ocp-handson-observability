@@ -28,7 +28,7 @@ Java Agent 用 JAR ファイルからメトリクスを収集 +
 
 ブラウザ(Chrome or Firefox)でOpenShift Webコンソールにログインします。
 
-OpenShift WebコンソールのRULは、etherpad OpenShift WebコンソールのURLを参照ください。
+OpenShift WebコンソールのURLは、etherpad OpenShift WebコンソールのURLを参照ください。
 
 `userX` としてログインしましょう。パスワードはetherpadの OpenShiftユーザのパスワードを参照ください。
 (etherpadで予約したuser1,user2などのIDです)
