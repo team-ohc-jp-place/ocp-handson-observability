@@ -76,7 +76,7 @@ NOTE: 以降の作業は全て"userX-jmx-monitor"Projectで行います。 +
 ----
 $ cd ~/
 
-$ git clone https://github.com/openlab-red/jboss-eap-prometheus
+$ git clone https://github.com/team-ohc-jp-place/jboss-eap-prometheus
 Cloning into 'jboss-eap-prometheus'...
 remote: Enumerating objects: 43, done.
 remote: Total 43 (delta 0), reused 0 (delta 0), pack-reused 43
